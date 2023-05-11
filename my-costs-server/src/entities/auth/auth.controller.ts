@@ -37,7 +37,15 @@ export class AuthController {
   @Post('login')
   async loginUser(@Body() loginUserDto: LoginUserDto, @Res() res: Response) {
     const user = await this.authServise.loginUser(loginUserDto);
+    const accessToken = await this.authServise.generateAccessToken(user);
+    const refreshToken = await this.authServise.generateRefreshToken(
+      user._id as string,
+    );
     res.statusCode = HttpStatus.OK;
-    return res.send({ username: user.username });
+    return res.send({
+      username: user.username,
+      ...accessToken,
+      ...refreshToken,
+    });
   }
 }
