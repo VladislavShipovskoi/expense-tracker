@@ -10,6 +10,7 @@ export class User {
 
   @Prop({ required: true })
   password: string;
+
   _id: mongoose.Types.ObjectId | string;
 }
 

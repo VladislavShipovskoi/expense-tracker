@@ -26,7 +26,7 @@ export class CostsController {
   @UseGuards(JWTGuard)
   @HttpCode(HttpStatus.OK)
   async getAllCost(@Req() req: Request, @Res() res: Response) {
-    const token = req.headers.authorization.split(' ')[1];
+    const token = this.authService.getToken(req);
     const user = await this.authService.getUserByTokenData(token);
     const allCosts = await this.costsService.findAll();
     const userCosts = allCosts.filter(
@@ -36,9 +36,13 @@ export class CostsController {
   }
 
   @Post('create')
-  async createCost(@Body() createCostDto: CreateCostDto, @Res() res: Response) {
-    await this.costsService.createCost(createCostDto);
-    res.statusCode = HttpStatus.CREATED;
-    return res.send('cost created');
+  async createCost(@Body() createCostDto: CreateCostDto, @Req() req: Request) {
+    const token = this.authService.getToken(req);
+    const user = this.authService.getUserByTokenData(token);
+
+    return await this.costsService.createCost({
+      ...createCostDto,
+      userId: (await user)._id as string,
+    });
   }
 }

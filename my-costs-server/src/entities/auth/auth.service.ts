@@ -5,6 +5,7 @@ import { LoginUserDto } from './dto/login-user-dto';
 import { CreateUserDto } from '../users/dto/create-user-dto';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -65,6 +66,10 @@ export class AuthService {
     );
 
     return JSON.parse(jsonPayload);
+  }
+
+  getToken(request: Request) {
+    return request.headers.authorization.split(' ')[1];
   }
 
   async getUserByTokenData(token: string): Promise<User | null> {
