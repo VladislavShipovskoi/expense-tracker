@@ -5,6 +5,7 @@ import { MongooseConfigService } from './config/mongoose-config-service';
 import { UsersModule } from './entities/users/users.module';
 import { AuthModule } from './entities/auth/auth.module';
 import configuration from './config/configuration';
+import { CostsModule } from './entities/costs/costs.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import configuration from './config/configuration';
     }),
     UsersModule,
     AuthModule,
+    CostsModule,
   ],
 })
 export class AppModule {}

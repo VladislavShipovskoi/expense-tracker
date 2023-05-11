@@ -1,26 +1,21 @@
 import {
   Controller,
   Post,
-  Get,
   Body,
   Res,
   HttpStatus,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { CreateUserDto } from '../users/create-user-dto';
+import { CreateUserDto } from '../users/dto/create-user-dto';
 import { Response } from 'express';
 import { RegistrationGuard } from './guards/registration.guard';
 import { AuthService } from './auth.service';
-import { LoginUserDto } from './login-user-dto';
+import { LoginUserDto } from './dto/login-user-dto';
 import { LoginGuard } from './guards/login.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private usersServise: UsersService,
-    private authServise: AuthService,
-  ) {}
+  constructor(private readonly authServise: AuthService) {}
 
   @UseGuards(RegistrationGuard)
   @Post('registrtion')
