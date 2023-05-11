@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MongooseConfigService } from './config/MongooseConfigService';
+import { MongooseConfigService } from './config/mongoose-config-service';
+import { UsersModule } from './entities/users/users.module';
+import { AuthModule } from './entities/auth/auth.module';
 import configuration from './config/configuration';
-import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UsersModule } from './users/users.module';
       load: [configuration],
     }),
     UsersModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
