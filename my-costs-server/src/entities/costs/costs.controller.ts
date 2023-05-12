@@ -10,6 +10,7 @@ import {
   HttpCode,
   Param,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { CostsService } from './costs.service';
@@ -59,5 +60,12 @@ export class CostsController {
     @Param('id') id: string,
   ) {
     return await this.costsService.updateCost(updateCostDto, id);
+  }
+
+  @UseGuards(JWTGuard)
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  async deleteCost(@Param('id') id: string) {
+    return await this.costsService.removeCost(id);
   }
 }
