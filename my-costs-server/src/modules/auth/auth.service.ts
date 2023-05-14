@@ -8,16 +8,17 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/users.schema';
 import { CreateUserDto } from '../users/dto/create-user-dto';
 import { JwtService } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
 import { Request } from 'express';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async loginWithCredentials(
@@ -66,8 +67,8 @@ export class AuthService {
       refresh_token: this.jwtService.sign(
         { userId },
         {
-          secret: jwtConstants.secret,
-          expiresIn: jwtConstants.refreshTokenExpiresIn,
+          secret: this.configService.get('jwt.accessTokenSecret'),
+          expiresIn: this.configService.get('jwt.accessTokenExpiration'),
         },
       ),
     };
