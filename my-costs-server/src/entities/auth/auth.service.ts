@@ -1,11 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  NotAcceptableException,
+  Res,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/users.schema';
-import { LoginUserDto } from './dto/login-user-dto';
 import { CreateUserDto } from '../users/dto/create-user-dto';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { Request } from 'express';
+import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -14,17 +20,39 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async loginUser(loginUserDto: LoginUserDto): Promise<User | null> {
-    const user = await this.usersService.findOne(loginUserDto.username);
-    if (!user) {
-      return null;
-    }
-
-    return user;
+  async loginWithCredentials(
+    user: User,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const accessToken = await this.generateAccessToken(user);
+    const refreshToken = await this.generateRefreshToken(user._id as string);
+    res.cookie('jwt', { ...accessToken, ...refreshToken }, { httpOnly: true });
+    return res.status(HttpStatus.OK).send({ message: 'ok' });
   }
 
   async registrationUser(createUserDto: CreateUserDto): Promise<void> {
     await this.usersService.createUser(createUserDto);
+  }
+
+  async validateUserCredentials(
+    username: string,
+    password: string,
+  ): Promise<User | null> {
+    const user = await this.usersService.findOne(username);
+
+    if (!user) {
+      throw new NotAcceptableException(
+        `User with name: ${username} does not exist`,
+      );
+    }
+
+    const passwordValid = await bcrypt.compare(password, user.password);
+
+    if (!passwordValid) {
+      throw new NotAcceptableException('Password incorrect');
+    }
+
+    return user;
   }
 
   async generateAccessToken(user: User) {
@@ -39,7 +67,7 @@ export class AuthService {
         { userId },
         {
           secret: jwtConstants.secret,
-          expiresIn: '30d',
+          expiresIn: jwtConstants.refreshTokenExpiresIn,
         },
       ),
     };
@@ -68,8 +96,8 @@ export class AuthService {
     return JSON.parse(jsonPayload);
   }
 
-  getToken(request: Request) {
-    return request.headers.authorization.split(' ')[1];
+  getTokens(request: Request) {
+    return { ...request.cookies.jwt };
   }
 
   async getUserByTokenData(token: string): Promise<User | null> {

@@ -16,8 +16,8 @@ import { Response, Request } from 'express';
 import { CostsService } from './costs.service';
 import { CreateCostDto } from './dto/create-cost-dto';
 import { AuthService } from '../auth/auth.service';
-import { JWTGuard } from '../auth/guards/jwt.guard';
 import { UpdateCostDto } from './dto/update-cost-dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('cost')
 export class CostsController {
@@ -26,12 +26,12 @@ export class CostsController {
     private readonly authService: AuthService,
   ) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
-  @UseGuards(JWTGuard)
   @HttpCode(HttpStatus.OK)
   async getAllCost(@Req() req: Request, @Res() res: Response) {
-    const token = this.authService.getToken(req);
-    const user = await this.authService.getUserByTokenData(token);
+    const tokens = this.authService.getTokens(req);
+    const user = await this.authService.getUserByTokenData(tokens.access_token);
     const allCosts = await this.costsService.findAll();
     const userCosts = allCosts.filter(
       (cost) => cost.userId === user._id.toString(),
@@ -39,12 +39,12 @@ export class CostsController {
     return res.send(userCosts);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('create')
-  @UseGuards(JWTGuard)
   @HttpCode(HttpStatus.OK)
   async createCost(@Body() createCostDto: CreateCostDto, @Req() req: Request) {
-    const token = this.authService.getToken(req);
-    const user = this.authService.getUserByTokenData(token);
+    const tokens = this.authService.getTokens(req);
+    const user = this.authService.getUserByTokenData(tokens.access_token);
 
     return await this.costsService.createCost({
       ...createCostDto,
@@ -52,7 +52,7 @@ export class CostsController {
     });
   }
 
-  @UseGuards(JWTGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   async updateCost(
@@ -62,7 +62,7 @@ export class CostsController {
     return await this.costsService.updateCost(updateCostDto, id);
   }
 
-  @UseGuards(JWTGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async deleteCost(@Param('id') id: string) {

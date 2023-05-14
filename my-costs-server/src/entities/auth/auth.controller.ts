@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Body,
+  Req,
   Res,
   HttpStatus,
   UseGuards,
@@ -10,12 +11,12 @@ import { CreateUserDto } from '../users/dto/create-user-dto';
 import { Response } from 'express';
 import { RegistrationGuard } from './guards/registration.guard';
 import { AuthService } from './auth.service';
-import { LoginUserDto } from './dto/login-user-dto';
-import { LoginGuard } from './guards/login.guard';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authServise: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @UseGuards(RegistrationGuard)
   @Post('registrtion')
@@ -23,24 +24,14 @@ export class AuthController {
     @Body() createUserDto: CreateUserDto,
     @Res() res: Response,
   ) {
-    await this.authServise.registrationUser(createUserDto);
+    await this.authService.registrationUser(createUserDto);
     res.statusCode = HttpStatus.CREATED;
     return res.send('user created');
   }
 
-  @UseGuards(LoginGuard)
+  @UseGuards(AuthGuard('local'))
   @Post('login')
-  async loginUser(@Body() loginUserDto: LoginUserDto, @Res() res: Response) {
-    const user = await this.authServise.loginUser(loginUserDto);
-    const accessToken = await this.authServise.generateAccessToken(user);
-    const refreshToken = await this.authServise.generateRefreshToken(
-      user._id as string,
-    );
-    res.statusCode = HttpStatus.OK;
-    return res.send({
-      username: user.username,
-      ...accessToken,
-      ...refreshToken,
-    });
+  async loginUser(@Req() req: Request, @Res() res: Response) {
+    return this.authService.loginWithCredentials(req.body, res);
   }
 }

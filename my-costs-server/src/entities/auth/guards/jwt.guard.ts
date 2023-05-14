@@ -17,12 +17,12 @@ export class JWTGuard implements CanActivate {
     //@ts-ignore
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest() as Request;
-    const token = this.authService.getToken(request);
-    if (!token) {
+    const tokens = this.authService.getTokens(request);
+    if (!tokens) {
       throw new UnauthorizedException('Authorization error');
     }
 
-    const validToken = this.authService.verifyToken(token);
+    const validToken = this.authService.verifyToken(tokens.access_token);
 
     if (validToken.error) {
       throw new UnauthorizedException(validToken.error);
