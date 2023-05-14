@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { User } from 'src/entities/users/users.schema';
+import { User } from 'src/modules/users/users.schema';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Request } from 'express';
 import { jwtConstants } from '../constants';
