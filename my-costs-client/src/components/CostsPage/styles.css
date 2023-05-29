@@ -9,7 +9,7 @@
 
 .form-item-btn-container {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 .form-item-btn-container button {

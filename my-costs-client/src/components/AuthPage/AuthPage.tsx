@@ -75,43 +75,45 @@ const AuthPage: FC<IAuthPageProps> = (props: IAuthPageProps) => {
   };
 
   return (
-    <div className="container">
-      <h1>{title}</h1>
-      <form onSubmit={handleClickAuth} className="form-group">
-        <label className="auth-label">
-          username
-          <input
-            type="text"
-            ref={usernameRef}
-            className="form-control"
-            required
-          />
-        </label>
-        <label className="auth-label">
-          password
-          <input
-            type="password"
-            ref={passwordRef}
-            className="form-control"
-            required
-          />
-        </label>
+    <div className="container d-flex justify-content-center">
+      <div className="w-50 mt-5">
+        <h1>{title}</h1>
+        <form onSubmit={handleClickAuth} className="form-group">
+          <label className="auth-label">
+            username
+            <input
+              type="text"
+              ref={usernameRef}
+              className="form-control"
+              required
+            />
+          </label>
+          <label className="auth-label">
+            password
+            <input
+              type="password"
+              ref={passwordRef}
+              className="form-control"
+              required
+            />
+          </label>
 
-        <button className="btn btn-primary auth-btn">
-          {spinner ? <Spinner /> : title}
-        </button>
-      </form>
-      {type === "login" ? (
-        <div className="auth-question-block">
-          <span className="auth-question-text">No account yet?</span>
-          <Link to={"/registration"}>signup</Link>
-        </div>
-      ) : (
-        <div className="auth-question-block">
-          <span className="auth-question-text">Already have an account?</span>
-          <Link to={"/login"}>login</Link>
-        </div>
-      )}
+          <button className="btn btn-primary auth-btn">
+            {spinner ? <Spinner /> : title}
+          </button>
+        </form>
+        {type === "login" ? (
+          <div className="auth-question-block">
+            <span className="auth-question-text">No account yet?</span>
+            <Link to={"/registration"}>signup</Link>
+          </div>
+        ) : (
+          <div className="auth-question-block">
+            <span className="auth-question-text">Already have an account?</span>
+            <Link to={"/login"}>login</Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
