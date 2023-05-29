@@ -25,14 +25,13 @@ export class AuthController {
   ) {}
 
   @UseGuards(RegistrationGuard)
-  @Post('registrtion')
+  @Post('registration')
   async registrationUser(
     @Body() createUserDto: CreateUserDto,
     @Res() res: Response,
   ) {
     await this.authService.registrationUser(createUserDto);
-    res.statusCode = HttpStatus.CREATED;
-    return res.send('user created');
+    return res.status(HttpStatus.CREATED).send();
   }
 
   @UseGuards(AuthGuard('local'))
@@ -42,7 +41,7 @@ export class AuthController {
   }
 
   @UseGuards(RefreshTokenGuard)
-  @Get('refresh')
+  @Post('refresh')
   async refreshToken(
     @Body() body: { username: string },
     @Req() req: Request,
@@ -54,15 +53,17 @@ export class AuthController {
     const accessToken = await this.authService.generateAccessToken(user);
 
     if (!validToken.error || validToken.error === 'jwt expired') {
-      const refresh_token = await this.authService.generateRefreshToken(
+      const refreshToken = await this.authService.generateRefreshToken(
         user._id as string,
       );
       res.cookie(
         'jwt',
-        { ...accessToken, ...refresh_token },
+        { ...accessToken, ...refreshToken },
         { httpOnly: true },
       );
-      return res.status(HttpStatus.OK).send();
+      return res
+        .status(HttpStatus.OK)
+        .send({ ...accessToken, ...refreshToken, username: user.username });
     } else {
       res.status(HttpStatus.BAD_REQUEST).send({ error: validToken.error });
     }

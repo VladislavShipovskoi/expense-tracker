@@ -21,14 +21,13 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async loginWithCredentials(
-    user: User,
-    @Res() res: Response,
-  ): Promise<Response> {
+  async loginWithCredentials(user: User, @Res() res: Response): Promise<void> {
     const accessToken = await this.generateAccessToken(user);
     const refreshToken = await this.generateRefreshToken(user._id as string);
-    res.cookie('jwt', { ...accessToken, ...refreshToken }, { httpOnly: true });
-    return res.status(HttpStatus.OK).send();
+    res
+      .cookie('jwt', { ...accessToken, ...refreshToken }, { httpOnly: true })
+      .status(HttpStatus.OK)
+      .send({ ...accessToken, ...refreshToken, username: user.username });
   }
 
   async registrationUser(createUserDto: CreateUserDto): Promise<void> {

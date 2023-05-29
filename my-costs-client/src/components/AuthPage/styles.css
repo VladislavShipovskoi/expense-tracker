@@ -1,3 +1,22 @@
-.login-form-item {
-  margin-bottom: 5px;
+.auth-label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.auth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  min-height: 50px;
+}
+
+.auth-question-block {
+  margin-top: 10px;
+}
+
+.auth-question-text {
+  display: inline-block;
+  margin-right: 5px;
 }

@@ -19,7 +19,7 @@ import { AuthService } from '../auth/auth.service';
 import { UpdateCostDto } from './dto/update-cost-dto';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('cost')
+@Controller('costs')
 export class CostsController {
   constructor(
     private readonly costsService: CostsService,
@@ -40,7 +40,7 @@ export class CostsController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Post('create')
+  @Post('')
   @HttpCode(HttpStatus.OK)
   async createCost(@Body() createCostDto: CreateCostDto, @Req() req: Request) {
     const tokens = this.authService.getTokens(req);

@@ -34,23 +34,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return null;
   }
 
-  async validate(req: Request, payload: User) {
-    if (!payload) {
-      throw new BadRequestException('invalid jwt token');
-    }
-
-    const data = req?.cookies['jwt'];
-
-    if (!data?.refresh_token) {
-      throw new BadRequestException('invalid refresh token');
-    }
-
-    const user = await this.authService.getUserByTokenData(data.access_token);
-
-    if (!user) {
-      throw new BadRequestException('token expired');
-    }
-
-    return user;
+  async validate(payload: User) {
+    return { id: payload._id, username: payload.username };
   }
 }

@@ -1,0 +1,35 @@
+.cost-item {
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  padding: 5px;
+  border-radius: 4px;
+}
+
+@media (max-width: 430px) {
+  .cost-item-input-container {
+    width: 100%;
+    flex-direction: column;
+    align-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .cost-item {
+    flex-direction: column;
+    align-content: center;
+  }
+
+  .cost-item-btn-container {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .cost-item-btn-container button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1000px) {
+  .cost-item {
+    gap: 15px;
+  }
+}
